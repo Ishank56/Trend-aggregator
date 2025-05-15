@@ -7,34 +7,29 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Skeleton } from '@/components/ui/skeleton';
+import SearchBar from './SearchBar';
 
 export function TrendsSearch() {
   const [searchQuery, setSearchQuery] = useState('');
   const [activePlatform, setActivePlatform] = useState<'all' | 'youtube' | 'reddit'>('all');
-  const { data, isLoading, error } = useTrends(searchQuery, activePlatform);
+  const [summarize, setSummarize] = useState(false);
+  const { data, isLoading, error } = useTrends(searchQuery, activePlatform, summarize);
 
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    // The search will be triggered automatically by the useTrends hook
-  };
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchQuery(e.target.value);
+  // Fix: Only pass handleSearch to SearchBar, not to form
+  const handleSearch = (term: string, summarizeParam?: boolean) => {
+    setSearchQuery(term);
+    setSummarize(!!summarizeParam);
   };
 
   return (
     <div className="container mx-auto p-4 space-y-6">
-      <form onSubmit={handleSearch} className="flex gap-4">
-        <Input
-          type="text"
-          placeholder="Search for trends..."
-          value={searchQuery}
-          onChange={handleInputChange}
-          className="flex-1"
-        />
-        <Button type="submit">Search</Button>
-      </form>
-
+      <SearchBar onSearch={handleSearch} />
+      {data?.summary && (
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+          <h3 className="font-semibold text-blue-700 mb-2">AI Summary</h3>
+          <div className="text-blue-900 whitespace-pre-line">{data.summary}</div>
+        </div>
+      )}
       <Tabs defaultValue="all" onValueChange={(value) => setActivePlatform(value as any)}>
         <TabsList>
           <TabsTrigger value="all">All</TabsTrigger>
@@ -158,4 +153,4 @@ function RedditResults({ posts }: { posts: any[] }) {
       ))}
     </div>
   );
-} 
+}

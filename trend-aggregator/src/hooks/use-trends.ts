@@ -5,20 +5,21 @@ import { RedditPost } from '@/lib/reddit';
 interface TrendsResponse {
   youtube: YouTubeVideo[];
   reddit: RedditPost[];
+  summary?: string;
 }
 
-export function useTrends(query: string, platform: 'all' | 'youtube' | 'reddit' = 'all') {
+export function useTrends(query: string, platform: 'all' | 'youtube' | 'reddit' = 'all', summarize?: boolean) {
   return useQuery<TrendsResponse>({
-    queryKey: ['trends', query, platform],
+    queryKey: ['trends', query, platform, summarize],
     queryFn: async () => {
       if (!query) {
         console.log('No query provided, returning empty results');
         return { youtube: [], reddit: [] };
       }
 
-      console.log('Fetching trends for query:', query, 'platform:', platform);
+      console.log('Fetching trends for query:', query, 'platform:', platform, 'summarize:', summarize);
       const response = await fetch(
-        `/api/trends?query=${encodeURIComponent(query)}&platform=${platform}`
+        `/api/trends?query=${encodeURIComponent(query)}&platform=${platform}${summarize ? '&summarize=true' : ''}`
       );
       
       if (!response.ok) {
@@ -33,4 +34,4 @@ export function useTrends(query: string, platform: 'all' | 'youtube' | 'reddit' 
     },
     enabled: !!query,
   });
-} 
+}

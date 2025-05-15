@@ -1,20 +1,20 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
 
 interface SearchBarProps {
-  onSearch: (term: string) => void;
+  onSearch: (term: string, summarize?: boolean) => void;
 }
 
 const SearchBar = ({ onSearch }: SearchBarProps) => {
   const [term, setTerm] = useState("");
+  const [summarize, setSummarize] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (term.trim()) {
-      onSearch(term.trim());
+      onSearch(term.trim(), summarize);
     }
   };
 
@@ -30,14 +30,22 @@ const SearchBar = ({ onSearch }: SearchBarProps) => {
             placeholder="Search any topic (e.g., Apple Vision Pro, Tesla Cybertruck)"
             value={term}
             onChange={(e) => setTerm(e.target.value)}
-            className="pl-4 pr-20 py-6 text-lg rounded-lg shadow-md border-slate-200 focus:border-blue-500 w-full"
+            className="pl-4 pr-28 py-6 text-lg rounded-lg shadow-md border-slate-200 focus:border-blue-500 w-full"
           />
           <Button 
             type="submit"
-            className="absolute right-1.5 top-1/2 transform -translate-y-1/2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white py-5 px-6"
+            className="absolute right-24 top-1/2 transform -translate-y-1/2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white py-5 px-6"
           >
             <Search className="w-5 h-5 mr-2" />
             Search
+          </Button>
+          <Button
+            type="button"
+            variant={summarize ? "default" : "outline"}
+            className="absolute right-1.5 top-1/2 transform -translate-y-1/2 py-5 px-6"
+            onClick={() => setSummarize((s) => !s)}
+          >
+            {summarize ? "Summarize On" : "Summarize"}
           </Button>
         </div>
       </form>
@@ -49,7 +57,7 @@ const SearchBar = ({ onSearch }: SearchBarProps) => {
             key={suggestion}
             onClick={() => {
               setTerm(suggestion);
-              onSearch(suggestion);
+              onSearch(suggestion, summarize);
             }}
             className="text-blue-600 hover:text-blue-800 hover:underline"
           >

@@ -12,21 +12,24 @@ export interface RedditPost {
   url: string;
 }
 
-// Only initialize Reddit client if credentials are available
 let reddit: Snoowrap | null = null;
 
 try {
   const userAgent = process.env.REDDIT_USER_AGENT;
   const clientId = process.env.REDDIT_CLIENT_ID;
   const clientSecret = process.env.REDDIT_CLIENT_SECRET;
+  const username = process.env.REDDIT_USERNAME;
+  const password = process.env.REDDIT_PASSWORD;
 
-  if (!userAgent || !clientId || !clientSecret) {
+  if (!userAgent || !clientId || !clientSecret || !username || !password) {
     console.warn('Missing Reddit API credentials. Reddit features will be disabled.');
   } else {
     reddit = new Snoowrap({
       userAgent,
       clientId,
       clientSecret,
+      username,
+      password,
     });
   }
 } catch (error) {
@@ -64,4 +67,4 @@ export const redditClient = {
       return [];
     }
   },
-}; 
+};
